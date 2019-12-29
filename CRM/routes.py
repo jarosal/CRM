@@ -1,9 +1,8 @@
-from flask import Flask, render_template, url_for, flash, redirect
-from forms import RegistrationForm, LoginForm
+from flask import render_template, url_for, flash, redirect
+from CRM import app, db, bcrypt
+from CRM.models import User, Meeting
+from CRM.forms import RegistrationForm, LoginForm
 
-app = Flask(__name__)
-
-app.config['SECRET_KEY'] = '15f745100028f7f415b74e9fd7ac7c7f'
 
 posts = [
     {
@@ -20,6 +19,7 @@ posts = [
     }
 ]
 
+
 @app.route("/")
 @app.route("/dashboard")
 def dashboard():
@@ -29,8 +29,12 @@ def dashboard():
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user = User(email = form.email.data, password=hashed_password)
+        db.session.add(user)
+        db.session.commit()
         flash(f'Konto stworzone dla {form.email.data}!', 'success')
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('dashboard')) #zmienic redirect na admin panel albo pozbyc sie wgl
     return render_template('register.html', title='Dodaj użytkownika', form=form)
 
 
@@ -44,5 +48,3 @@ def login():
         else:
             flash('Logowanie nieudane. Proszę sprawdź podane dane.', 'danger')
     return render_template('login.html', title='Zaloguj się', form=form)
-
-

@@ -1,2 +1,2 @@
-FLASK_APP=crm.py
+FLASK_APP=run.py
 FLASK_DEBUG=1
