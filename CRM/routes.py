@@ -1,7 +1,8 @@
-from flask import render_template, url_for, flash, redirect
+from flask import render_template, url_for, flash, redirect, request
 from CRM import app, db, bcrypt
 from CRM.models import User, Meeting
 from CRM.forms import RegistrationForm, LoginForm
+from flask_login import login_user, current_user, logout_user, login_required
 
 
 posts = [
@@ -39,12 +40,36 @@ def register():
 
 
 @app.route("/login", methods=['GET', 'POST'])
+# def login():
+#     form = LoginForm()
+#     if form.validate_on_submit():
+#         if form.email.data == 'admin@blog.com' and form.password.data == 'password':
+#             flash('Zostałeś zalogowany!', 'success')
+#             return redirect(url_for('dashboard'))
+#         else:
+#             flash('Logowanie nieudane. Proszę sprawdź podane dane.', 'danger')
+#     return render_template('login.html', title='Zaloguj się', form=form)
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
     form = LoginForm()
     if form.validate_on_submit():
-        if form.email.data == 'admin@blog.com' and form.password.data == 'password':
-            flash('Zostałeś zalogowany!', 'success')
-            return redirect(url_for('dashboard'))
+        user = User.query.filter_by(email=form.email.data).first()
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
+            login_user(user, remember=form.remember.data)
+            next_page = request.args.get('next')
+            return redirect(next_page) if next_page else redirect(url_for('dashboard'))
         else:
-            flash('Logowanie nieudane. Proszę sprawdź podane dane.', 'danger')
-    return render_template('login.html', title='Zaloguj się', form=form)
+            flash('Login Unsuccessful. Please check email and password', 'danger')
+    return render_template('login.html', title='Login', form=form)
+
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
+
+@app.route("/account")
+@login_required
+def account():
+    return render_template('account.html', title='Konto')
