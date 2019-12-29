@@ -1,0 +1,2 @@
+FLASK_APP=crm.py
+FLASK_DEBUG=1
