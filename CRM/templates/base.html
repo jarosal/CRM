@@ -32,10 +32,10 @@
                 <div class="collapse navbar-collapse" id="navbarToggle">
                     <div class="navbar-nav mr-auto">
                         <a class="nav-item nav-link" href="{{ url_for('dashboard') }}">Dashboard</a>
-                        <a class="nav-item nav-link" href="/">Spotkania</a>
+                        <a class="nav-item nav-link" href="{{ url_for('new_meeting')}}">Spotkania</a>
                         <a class="nav-item nav-link" href="/">Dostawcy</a>
                         <a class="nav-item nav-link" href="/">Produkty</a>
-                        <a class="nav-item nav-link" href="/">Klienci</a>
+                        <a class="nav-item nav-link" href="{{ url_for('add_customer') }}">Klienci</a>
                         <a class="nav-item nav-link" href="{{ url_for('register') }}">Dodaj użytkownika</a>
 
                     </div>
