@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+{% for meeting in meetings %}
+<article class="media content-section">
+  <img class="rounded-circle article-img"
+    src="{{ url_for('static', filename='profile_pics/' + meeting.who.image_file) }}">
+  <div class="media-body">
+    <div class="article-metadata">
+      <a class="mr-2" href="#">{{ meeting.who.full_name() }}</a><br>
+      <a class="mr-3" href="#">{{ meeting.with_who.customer_name }}</a><br>
+      <small class="text-muted">{{ meeting.date.strftime('%Y-%m-%d %H:%M') }}</small>
+    </div>
+    <h2><a class="article-title" href="{{ url_for('meeting', meeting_id=meeting.id) }}">{{ meeting.with_who.customer_name }}</a></h2>
+  </div>
+</article>
+{% endfor %}
+{% endblock content %}
+{% block sidebar %}
+{% include "partials/add_meeting_sidebar.html" %}
+{% endblock sidebar %}

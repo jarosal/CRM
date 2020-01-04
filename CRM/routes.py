@@ -8,26 +8,11 @@ from CRM.forms import RegistrationForm, LoginForm, UpdateAccountForm, AddCustome
 from flask_login import login_user, current_user, logout_user, login_required
 
 
-posts = [
-    {
-        'author': 'Corey Schafer',
-        'title': 'Blog Post 1',
-        'content': 'First post content',
-        'date_posted': 'April 20, 2018'
-    },
-    {
-        'author': 'Jane Doe',
-        'title': 'Blog Post 2',
-        'content': 'Second post content',
-        'date_posted': 'April 21, 2018'
-    }
-]
-
-
 @app.route("/")
 @app.route("/dashboard")
 def dashboard():
-    return render_template('dashboard.html', posts=posts)
+    meetings = Meeting.query.all()
+    return render_template('dashboard.html', meetings=meetings)
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
@@ -43,15 +28,6 @@ def register():
 
 
 @app.route("/login", methods=['GET', 'POST'])
-# def login():
-#     form = LoginForm()
-#     if form.validate_on_submit():
-#         if form.email.data == 'admin@blog.com' and form.password.data == 'password':
-#             flash('Zostałeś zalogowany!', 'success')
-#             return redirect(url_for('dashboard'))
-#         else:
-#             flash('Logowanie nieudane. Proszę sprawdź podane dane.', 'danger')
-#     return render_template('login.html', title='Zaloguj się', form=form)
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
@@ -88,6 +64,7 @@ def save_picture(form_picture):
 @app.route("/account", methods=['GET', 'POST'])
 #@login_required
 def account():
+    meetings = Meeting.query.all()
     form = UpdateAccountForm()
     if form.validate_on_submit():
         if form.picture.data:
@@ -100,7 +77,7 @@ def account():
     elif request.method == 'GET':
         form.email.data = current_user.email
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
-    return render_template('account.html', title='Account', image_file=image_file, form=form)
+    return render_template('account.html', title='Account', image_file=image_file, form=form, meetings=meetings)
 
 
 @app.route("/add_customer", methods=['GET', 'POST'])
@@ -114,14 +91,49 @@ def add_customer():
         return redirect(url_for('dashboard')) # zmienic redirect na admin panel albo pozbyc sie wgl
     return render_template('add_customer.html', title='Dodaj użytkownika', form=form)
 
-@app.route("/meetings/new", methods=['GET', 'POST'])
-# @login_required
-def new_meeting():
+@app.route("/meetings", methods=['GET', 'POST'])
+def meetings():
+    meetings = Meeting.query.all()
     form = MeetingForm()
     if form.validate_on_submit():
-        meeting = Meeting(who=current_user, with_who=form.with_who.data) # dodac date
+        meeting = Meeting(who=current_user, with_who = Customer.query.filter_by(id=form.with_who.data).first()) # dodac date
         db.session.add(meeting)
         db.session.commit()
-        flash('Your post has been created!', 'success')
-        return redirect(url_for('dashboard'))
-    return render_template('add_meeting.html', title='Nowe spotkanie', form=form, legend='Nowe spotkanie')
+        flash('Spotkanie zostało dodane!', 'success')
+        return redirect(url_for('meetings'))
+    return render_template('meetings.html', meetings=meetings, form=form)
+
+@app.route("/meetings/<int:meeting_id>")
+def meeting(meeting_id):
+    meeting = Meeting.query.get_or_404(meeting_id)
+    return render_template('meeting.html', meeting=meeting)
+
+
+@app.route("/meetings/<int:meeting_id>/update", methods=['GET', 'POST'])
+#@login_required
+def update_meeting(post_id):
+    meeting = Meeting.query.get_or_404(meeting_id)
+    if meeting.who != current_user:
+        abort(403)
+    form = MeetingForm()
+    if form.validate_on_submit():
+        meeting.content = form.notes.data
+        db.session.commit()
+        flash('Your post has been updated!', 'success')
+        return redirect(url_for('meeting', post_id=post.id))
+    elif request.method == 'GET':
+        form.title.data = post.title
+        form.content.data = post.content
+    return render_template('create_post.html', title='Update Post', form=form, legend='Update Post')
+
+
+@app.route("/post/<int:post_id>/delete", methods=['POST'])
+# @login_required
+def delete_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    if post.author != current_user:
+        abort(403)
+    db.session.delete(post)
+    db.session.commit()
+    flash('Your post has been deleted!', 'success')
+    return redirect(url_for('home'))

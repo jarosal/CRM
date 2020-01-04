@@ -1,0 +1,9 @@
+<h3>Nadchodzące spotkania</h3>
+<p class='text-muted'>
+  <ul class="list-group">
+    {% for meeting in meetings %}
+    <a href="{{ url_for('meeting', meeting_id=meeting.id) }}" class="list-group-item list-group-item-action">{{ meeting.with_who.customer_name }} <br>{{ meeting.date.strftime('%d.%m %H:%M') }}</a>
+    {% endfor %}
+    
+  </ul>
+</p>
