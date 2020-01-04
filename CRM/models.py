@@ -26,7 +26,7 @@ class Meeting(db.Model):
     date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     notes = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    customer_id = db.Column(db.Integer,db.ForeignKey('customer.id'),nullable=False)
+    customer_id = db.Column(db.Integer,db.ForeignKey('customer.id'), nullable=False)
     
 
     def __repr__(self):

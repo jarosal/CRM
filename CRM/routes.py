@@ -95,6 +95,7 @@ def add_customer():
 def meetings():
     meetings = Meeting.query.all()
     form = MeetingForm()
+    form.date.choices = [('1', Customer.query.filter_by(id=1).first()), ('2', '10am') ]
     if form.validate_on_submit():
         meeting = Meeting(who=current_user, with_who = Customer.query.filter_by(id=form.with_who.data).first()) # dodac date
         db.session.add(meeting)
