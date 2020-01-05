@@ -45,4 +45,6 @@ class Customer(db.Model):
 
     def __repr__(self):
         return f"Customer ('{self.customer_name}', '{self.agent_name}','{self.agent_last_name}', '{self.email}', '{self.phone}' , '{self.address}')"
+    
+
         

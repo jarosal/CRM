@@ -1,9 +1,13 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, SelectField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, InputRequired, ValidationError
 from CRM.models import User, Customer, Meeting
+from wtforms.ext.sqlalchemy.fields import QuerySelectField
+from wtforms.fields.html5 import DateField, TimeField
+from datetime import datetime
+
 
 
 class RegistrationForm(FlaskForm):
@@ -54,6 +58,11 @@ class AddCustomerForm(FlaskForm):
 
 
 class MeetingForm(FlaskForm):
-    with_who = IntegerField('Klient', validators=[DataRequired()])   # dodac date
-    date = SelectField('Data') 
+
+    def get_customers():      
+        return Customer.query
+
+    with_who = QuerySelectField('Klient', validators=[DataRequired()], query_factory=get_customers, get_label='customer_name')   # dodac date
+    date = DateField('Data', format='%Y-%m-%d', default=datetime.utcnow)
+    time = TimeField('Godzina', format='%H:%M', default=datetime.utcnow)
     submit = SubmitField('Dodaj')

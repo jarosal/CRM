@@ -6,6 +6,7 @@ from CRM import app, db, bcrypt
 from CRM.models import User, Meeting, Customer
 from CRM.forms import RegistrationForm, LoginForm, UpdateAccountForm, AddCustomerForm, MeetingForm
 from flask_login import login_user, current_user, logout_user, login_required
+from datetime import datetime
 
 
 @app.route("/")
@@ -95,9 +96,8 @@ def add_customer():
 def meetings():
     meetings = Meeting.query.all()
     form = MeetingForm()
-    form.date.choices = [('1', Customer.query.filter_by(id=1).first()), ('2', '10am') ]
     if form.validate_on_submit():
-        meeting = Meeting(who=current_user, with_who = Customer.query.filter_by(id=form.with_who.data).first()) # dodac date
+        meeting = Meeting(who = current_user, with_who = Customer.query.filter_by(id=form.with_who.data.id).first(), date = datetime.combine(form.date.data, form.time.data))
         db.session.add(meeting)
         db.session.commit()
         flash('Spotkanie zostało dodane!', 'success')

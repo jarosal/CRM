@@ -17,9 +17,33 @@
                 {% endif %}
             </div>
             <div class="form-group">
-                {{ form.date }}
+                {{ form.date.label(class="form-control-label") }}
+                {% if form.date.errors %}
+                {{ form.date(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.date.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.date(class="form-control form-control-lg") }}
+                {% endif %}
             </div>
-            
+            <div class="form-group">
+                {{ form.time.label(class="form-control-label") }}
+                {% if form.time.errors %}
+                {{ form.time(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.time.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.time(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+   
+
 
         <div class="form-group">
             {{ form.submit(class="btn btn-outline-info") }}
