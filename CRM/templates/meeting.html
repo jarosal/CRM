@@ -1,39 +1,32 @@
 {% extends "base.html" %}
 {% block content %}
-  <article class="media content-section">
-    <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + meeting.who.image_file) }}">
-    <div class="media-body">
-      <div class="article-metadata">
-        <a class="mr-2" href="#">{{ meeting.who.full_name() }}</a>
-        <small class="text-muted">{{ meeting.date.strftime('%Y-%m-%d') }}</small>
-        {% if meeting.who == current_user %}
-          <div>
-            <a class="btn btn-secondary btn-sm mt-1 mb-1" href="#">Update</a>
-            <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModal">Delete</button>
-          </div>
-        {% endif %}
-      </div>
-      <h2 class="article-title">{{ meeting.who }}</h2>
-      <p class="article-content">{{ meeting.notes }}</p>
+<article class="media content-section">
+  <img class="rounded-circle article-img"
+    src="{{ url_for('static', filename='profile_pics/' + meeting.who.image_file) }}">
+  <div class="media-body">
+    <div class="article-metadata">
+      <a class="mr-0" href="#">{{ meeting.who.full_name() }}</a> z
+      <a class="mr-0" href="#">{{ meeting.with_who.customer_name }}</a><br>
+      <small class="text-muted">{{ meeting.date.strftime('%Y-%m-%d %H:%M') }}</small>
     </div>
-  </article>
-  <!-- Modal -->
-  <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="deleteModalLabel">Delete Post?</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <form action="#" method="POST">
-            <input class="btn btn-danger" type="submit" value="Delete">
-          </form>
-        </div>
+    <h2 class="article-title">{{ meeting.title }}</h2>
+    <div class="form-group">
+      {{ form.notes.label(class="form-control-label") }}
+      {% if form.notes.errors %}
+      {{ form.notes(class="form-control form-control-lg is-invalid") }}
+      <div class="invalid-feedback">
+        {% for error in form.notes.errors %}
+        <span>{{ error }}</span>
+        {% endfor %}
       </div>
+      {% else %}
+      {{ form.notes(class="form-control form-control-lg") }}
+      {% endif %}
+    </div>
+    <div class="form-group">
+      {{ form.submit(class="btn btn-outline-info") }}
     </div>
   </div>
+</article>
+
 {% endblock content %}

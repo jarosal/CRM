@@ -13,6 +13,7 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(25), nullable=False)
     last_name = db.Column(db.String(45), nullable=False)
     password = db.Column(db.String(60), nullable=False)
+    admin = db.Column(db.Boolean, default=False, nullable=False)
     meetings = db.relationship('Meeting', backref='who', lazy=True)
 
     def __repr__(self):
@@ -24,7 +25,8 @@ class User(db.Model, UserMixin):
 class Meeting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    notes = db.Column(db.Text)
+    title = db.Column(db.String(100), nullable=False)
+    notes = db.Column(db.Text, default = "Brak notatek!")
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     customer_id = db.Column(db.Integer,db.ForeignKey('customer.id'), nullable=False)
     
@@ -32,6 +34,24 @@ class Meeting(db.Model):
     def __repr__(self):
         return f"Post('{self.notes}', '{self.date}')"
 
+
+
+class Product(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(140))
+
+    def __repr__(self):
+        return f"Product('{self.id}', '{self.name}')"
+
+class Contract(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    customer_id = db.Column(db.Integer,db.ForeignKey('customer.id'),nullable=False)
+    product_id = db.Column(db.Integer,db.ForeignKey('product.id'),nullable=False)
+    price = db.Column(db.Integer)
+    contract = db.Column(db.Integer)
+
+    def __repr__(self):
+        return f"Product Offer('{self.id}', '{self.customer_id}', '{self.product_id}', '{self.price}', '{self.contract}')"
 
 class Customer(db.Model):
     id = db.Column(db.Integer, primary_key=True)

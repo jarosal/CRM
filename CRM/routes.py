@@ -3,29 +3,36 @@ import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request
 from CRM import app, db, bcrypt
-from CRM.models import User, Meeting, Customer
-from CRM.forms import RegistrationForm, LoginForm, UpdateAccountForm, AddCustomerForm, MeetingForm
+from CRM.models import User, Meeting, Customer, Product, Contract
+from CRM.forms import RegistrationForm, LoginForm, AddProductForm, UpdateAccountForm, AddCustomerForm, MeetingForm, EditMeetingForm
 from flask_login import login_user, current_user, logout_user, login_required
 from datetime import datetime
+from sqlalchemy import and_
+
+def upcoming_meetings():
+    todays_datetime = datetime(datetime.today().year, datetime.today().month, datetime.today().day, datetime.today().hour)
+    upcoming_meetings = Meeting.query.filter(and_(Meeting.date >= todays_datetime), Meeting.user_id == current_user.id ).all()
+    return upcoming_meetings
+
 
 
 @app.route("/")
 @app.route("/dashboard")
 def dashboard():
-    meetings = Meeting.query.all()
-    return render_template('dashboard.html', meetings=meetings)
+    return render_template('dashboard.html', meetings=upcoming_meetings())
 
-@app.route("/register", methods=['GET', 'POST'])
-def register():
+@app.route("/users", methods=['GET', 'POST'])
+def users():
     form = RegistrationForm()
+    users = User.query.all()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = User(email = form.email.data, password = hashed_password, name = form.name.data, last_name = form.last_name.data)
+        user = User(email = form.email.data, password = hashed_password, name = form.name.data, last_name = form.last_name.data, admin = form.admin.data)
         db.session.add(user)
         db.session.commit()
         flash(f'Konto stworzone dla {form.email.data}!', 'success')
-        return redirect(url_for('dashboard')) #zmienic redirect na admin panel albo pozbyc sie wgl
-    return render_template('register.html', title='Dodaj użytkownika', form=form)
+        return redirect(url_for('users'))
+    return render_template('users.html', title='Użytkownicy', form=form, users=users)
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -65,7 +72,6 @@ def save_picture(form_picture):
 @app.route("/account", methods=['GET', 'POST'])
 #@login_required
 def account():
-    meetings = Meeting.query.all()
     form = UpdateAccountForm()
     if form.validate_on_submit():
         if form.picture.data:
@@ -78,54 +84,65 @@ def account():
     elif request.method == 'GET':
         form.email.data = current_user.email
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
-    return render_template('account.html', title='Account', image_file=image_file, form=form, meetings=meetings)
+    return render_template('account.html', title='Account', image_file=image_file, form=form, meetings=upcoming_meetings())
 
 
-@app.route("/add_customer", methods=['GET', 'POST'])
-def add_customer():
+@app.route("/customers", methods=['GET', 'POST'])
+def customers():
     form = AddCustomerForm()
+    customers = Customer.query.all()
     if form.validate_on_submit():
         customer = Customer(email = form.email.data, customer_name = form.customer.data, agent_name = form.name.data, agent_last_name = form.last_name.data, phone = form.phone.data, address = form.address.data)
         db.session.add(customer)
         db.session.commit()
         flash(f'Konto stworzone dla {form.email.data}!', 'success')
         return redirect(url_for('dashboard')) # zmienic redirect na admin panel albo pozbyc sie wgl
-    return render_template('add_customer.html', title='Dodaj użytkownika', form=form)
+    return render_template('customers.html', title='Dodaj użytkownika', form=form,customers=customers)
+
+
+@app.route("/products" ,methods=['GET', 'POST'])
+def products():
+
+    form = AddProductForm()
+    if form.validate_on_submit():
+        product_to_add = Product(name = form.name.data)
+        db.session.add(product_to_add)
+        db.session.commit()
+        flash(f'Produkt dodany {form.name.data}!', 'success')
+        return redirect(url_for('products'))
+
+    product = Product.query.all()
+    return render_template('products.html', product=product, form=form)
+
+
+@app.route("/contracts")
+
+def contracts():
+    contract = Contract.query.all()
+    return render_template('contracts.html', contract=contract)
+
 
 @app.route("/meetings", methods=['GET', 'POST'])
 def meetings():
-    meetings = Meeting.query.all()
     form = MeetingForm()
     if form.validate_on_submit():
-        meeting = Meeting(who = current_user, with_who = Customer.query.filter_by(id=form.with_who.data.id).first(), date = datetime.combine(form.date.data, form.time.data))
+        meeting = Meeting(who = current_user, with_who = Customer.query.filter_by(id=form.with_who.data.id).first(), date = datetime.combine(form.date.data, form.time.data), title = form.title.data)
         db.session.add(meeting)
         db.session.commit()
         flash('Spotkanie zostało dodane!', 'success')
         return redirect(url_for('meetings'))
-    return render_template('meetings.html', meetings=meetings, form=form)
+    return render_template('meetings.html', meetings=upcoming_meetings(), form=form)
 
-@app.route("/meetings/<int:meeting_id>")
+@app.route("/meetings/<int:meeting_id>", methods=['GET', 'POST'])
 def meeting(meeting_id):
+    form = EditMeetingForm()
     meeting = Meeting.query.get_or_404(meeting_id)
-    return render_template('meeting.html', meeting=meeting)
-
-
-@app.route("/meetings/<int:meeting_id>/update", methods=['GET', 'POST'])
-#@login_required
-def update_meeting(post_id):
-    meeting = Meeting.query.get_or_404(meeting_id)
-    if meeting.who != current_user:
-        abort(403)
-    form = MeetingForm()
     if form.validate_on_submit():
-        meeting.content = form.notes.data
+        meeting.notes = form.notes.data
         db.session.commit()
-        flash('Your post has been updated!', 'success')
-        return redirect(url_for('meeting', post_id=post.id))
-    elif request.method == 'GET':
-        form.title.data = post.title
-        form.content.data = post.content
-    return render_template('create_post.html', title='Update Post', form=form, legend='Update Post')
+        flash('Zmiany zapisane!', 'success')
+        return redirect(url_for('meetings'))
+    return render_template('meeting.html', meeting=meeting, form=form)
 
 
 @app.route("/post/<int:post_id>/delete", methods=['POST'])

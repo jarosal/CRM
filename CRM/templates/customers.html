@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+{% for customer in customers %}
+<article class="media content-section">
+  <div class="media-body">
+    <div class="article-metadata">
+      <a class="mr-2" href="#">{{ customer.customer_name }}</a><br>
+      <a class="mr-3" href="#">{{ customer.agent_name }}</a><br>
+      <small class="text-muted">{{ customer.agent_last_name }}</small>
+    </div>
+  </div>
+</article>
+{% endfor %}
+{% endblock content %}
+{% block sidebar %}
+{% include "partials/add_customer_sidebar.html" %}
+{% endblock sidebar %}

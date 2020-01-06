@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+{% for contract in contract %}
+<article class="media content-section">
+  <div class="media-body">
+    <div class="article-metadata">
+      <a class="mr-2" href="#">{{ contract.customer_id }}</a>
+      <small class="text-muted">{{ contract.price }}</small>
+    </div>
+    <h2><a class="article-title" href="#"></a></h2>
+    <p class="article-content">{{product_to_add}}</p>
+  </div>
+</article>
+{% endfor %}
+{% endblock content %}

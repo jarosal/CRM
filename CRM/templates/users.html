@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+{% for user in users %}
+<article class="media content-section">
+    <img class="rounded-circle article-img"
+    src="{{ url_for('static', filename='profile_pics/' + user.image_file) }}">
+  <div class="media-body">
+    <div class="article-metadata">
+      <a class="mr-2" href="#">{{ user.email }}</a><br>
+      <a class="mr-2" href="#">{{ user.full_name() }}</a><br>
+    </div>
+  </div>
+</article>
+{% endfor %}
+{% endblock content %}
+{% block sidebar %}
+{% include "partials/add_user_sidebar.html" %}
+{% endblock sidebar %}

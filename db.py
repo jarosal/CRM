@@ -4,7 +4,7 @@ db.create_all()
 
 from CRM.models import User, Customer
 
-user = User(email = 'admin@egjs.pl', name = 'Jarosław', last_name = 'Śliwiński', password = '$2b$12$Gm3Of9kRyShD3bxLuArsLOzpZfPwip7T.hJMZL5QDLplaIuto2wAO')
+user = User(email = 'admin@egjs.pl', name = 'Jarosław', last_name = 'Śliwiński', password = '$2b$12$Gm3Of9kRyShD3bxLuArsLOzpZfPwip7T.hJMZL5QDLplaIuto2wAO', admin = True)
 # hasło to 123
 
 customer1 = Customer(customer_name = 'Tesco', agent_name = 'Emil', agent_last_name = 'Gugała', email = 'gugson@xd.pl', phone = '123123123', address = 'Głogówno')

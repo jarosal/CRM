@@ -1,9 +1,9 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, TextAreaField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, InputRequired, ValidationError
-from CRM.models import User, Customer, Meeting
+from CRM.models import User, Customer, Meeting, Product, Contract
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.fields.html5 import DateField, TimeField
 from datetime import datetime
@@ -15,6 +15,7 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('Hasło', validators=[InputRequired("Podaj hasło")])
     name = StringField('Imię', validators=[InputRequired("Podaj imię")])
     last_name = StringField('Nazwisko', validators=[InputRequired("Podaj nazwisko")])
+    admin = BooleanField('Administrator')
     submit = SubmitField('Dodaj')
 
     def validate_email(self, email):
@@ -57,6 +58,11 @@ class AddCustomerForm(FlaskForm):
             raise ValidationError('Taka firma już istnieje.')
 
 
+class AddProductForm(FlaskForm):
+    name = StringField('Nazwa', validators=[InputRequired("Podaj nazwę produktu")])
+    submit = SubmitField('Dodaj')
+
+
 class MeetingForm(FlaskForm):
 
     def get_customers():      
@@ -65,4 +71,11 @@ class MeetingForm(FlaskForm):
     with_who = QuerySelectField('Klient', validators=[DataRequired()], query_factory=get_customers, get_label='customer_name')   # dodac date
     date = DateField('Data', format='%Y-%m-%d', default=datetime.utcnow)
     time = TimeField('Godzina', format='%H:%M', default=datetime.utcnow)
+    title = StringField('Opis spotkania', validators=[InputRequired("Podaj opis spotkania")])
     submit = SubmitField('Dodaj')
+
+class EditMeetingForm(FlaskForm):
+
+    notes = TextAreaField('Notatki')
+    submit = SubmitField('Zapisz')
+
