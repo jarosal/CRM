@@ -1,15 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
-{% for contract in contract %}
+{% for contract in contracts %}
 <article class="media content-section">
   <div class="media-body">
     <div class="article-metadata">
-      <a class="mr-2" href="#">{{ contract.customer_id }}</a>
-      <small class="text-muted">{{ contract.price }}</small>
+      
+      Klient: <a class="mr-0" href="{{ url_for('customer', customer_id=contract.customer.id) }}">{{ contract.customer.customer_name }}</a><br>
+      Dostawca: <a class="mr-0" href="{{ url_for('supplier', supplier_id=contract.supplier.id) }}">{{ contract.supplier.supplier_name }}</a><br>
+      
     </div>
-    <h2><a class="article-title" href="#"></a></h2>
-    <p class="article-content">{{product_to_add}}</p>
+    <h2><a class="article-title" href="{{ url_for('contract', contract_id=contract.id) }}">{{ contract.title }}</a></h2>
+    <p class="article-content"></p>
   </div>
 </article>
 {% endfor %}
 {% endblock content %}
+{% block sidebar %}
+{% include "partials/add_contract_sidebar.html" %}
+{% endblock sidebar %}

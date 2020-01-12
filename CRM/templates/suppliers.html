@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
-{% for customer in customers %}
+{% for supplier in suppliers %}
 <article class="media content-section">
   <div class="media-body">   
-    <h2><a class="article-title" href="{{ url_for('customer', customer_id=customer.id) }}">{{ customer.customer_name }}</a></h2>
+    <h2><a class="article-title" href="{{ url_for('supplier', supplier_id=supplier.id) }}">{{ supplier.supplier_name }}</a></h2>
   </div>
 </article>
 {% endfor %}
 {% endblock content %}
 {% block sidebar %}
-{% include "partials/add_customer_sidebar.html" %}
+{% include "partials/add_supplier_sidebar.html" %}
 {% endblock sidebar %}

@@ -6,9 +6,9 @@
     src="{{ url_for('static', filename='profile_pics/' + user.image_file) }}">
   <div class="media-body">
     <div class="article-metadata">
-      <a class="mr-2" href="#">{{ user.email }}</a><br>
-      <a class="mr-2" href="#">{{ user.full_name() }}</a><br>
+      <a class="mr-2">{{ user.full_name() }}</a><br>
     </div>
+    <h2><a class="article-title" href="{{ url_for('user', user_id=user.id) }}">{{ user.email }}</a></h2>
   </div>
 </article>
 {% endfor %}

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block content %}
+<article class="media content-section">
+    <div class="media-body">
+
+        <legend class="border-bottom mb-4">Edytuj użytkownika</legend>
+
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+
+            <div class="form-group">
+                {{ form.email.label(class="form-control-label") }}
+                {% if form.email.errors %}
+                    {{ form.email(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.email.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.email(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+
+
+
+
+            <div class="form-group">
+                {{ form.name.label(class="form-control-label") }}
+                {% if form.name.errors %}
+                {{ form.name(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.name.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.name(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.last_name.label(class="form-control-label") }}
+                {% if form.last_name.errors %}
+                {{ form.last_name(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.last_name.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.last_name(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            {% if current_user.admin %}
+            <div class="form-check">
+                {{ form.admin(class="form-check-input") }}
+                {{ form.admin.label(class="form-check-label") }}
+            </div>
+            {% endif %}<br>
+
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+                {% if current_user != user %}
+                <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#deleteModal">Usuń
+                    użytkownika</button>
+                {% endif %}
+            </div>
+
+        </form>
+
+    </div>
+</article>
+
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Usunąć użytkownika?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zamknij</button>
+                <form action="{{ url_for('delete_user', user_id=user.id) }}" method="POST">
+                    <input class="btn btn-danger" type="submit" value="Usuń">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}
+{% block sidebar %}
+{% include "partials/upcoming_meetings_sidebar.html" %}
+{% endblock sidebar %}

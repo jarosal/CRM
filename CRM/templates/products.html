@@ -4,11 +4,7 @@
   {% for product in product %}
   <article class="media content-section">
     <div class="media-body">
-      <div class="article-metadata">
-        <a class="mr-2" href="#">{{ product.id }}</a>
-        <small class="text-muted">{{ product.name }}</small>
-      </div>
-      <h2><a class="article-title" href="#"></a></h2>
+      <h2><a class="article-title" href="{{ url_for('product', product_id=product.id) }}">{{ product.name }} {{ product.price }} zł/kg</a></h2>
       <p class="article-content"></p>
     </div>
   </article>
