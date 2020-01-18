@@ -5,8 +5,10 @@
     src="{{ url_for('static', filename='profile_pics/' + meeting.who.image_file) }}">
   <div class="media-body">
     <div class="article-metadata">
-      <a class="mr-0" href="#">{{ meeting.who.full_name() }}</a> z
-      <a class="mr-0" href="#">{{ meeting.with_who.customer_name }}</a><br>
+      <a class="mr-0">{{ meeting.typ}}</a><br> 
+      Użytkownik: <a class="mr-0" href="#">{{ meeting.who.full_name() }}</a><br> 
+      Klient: <a class="mr-0" href="#">{{ meeting.with_who.customer_name }}</a><br>
+      
       <small class="text-muted">{{ meeting.date.strftime('%Y-%m-%d %H:%M') }}</small>
     </div>
     <h2 class="article-title">{{ meeting.title }}</h2>
@@ -26,7 +28,7 @@
       </div>
       <div class="form-group">
         {{ form.submit(class="btn btn-outline-info") }}
-        <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#deleteModal">Usuń spotkanie</button>
+        <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#deleteModal">Usuń zdarzenie</button>
       </div>
 
     </form>
@@ -38,7 +40,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="deleteModalLabel">Usunąć spotkanie?</h5>
+          <h5 class="modal-title" id="deleteModalLabel">Usunąć zdarzenie?</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>

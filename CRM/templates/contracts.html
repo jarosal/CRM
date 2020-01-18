@@ -7,6 +7,7 @@
       
       Klient: <a class="mr-0" href="{{ url_for('customer', customer_id=contract.customer.id) }}">{{ contract.customer.customer_name }}</a><br>
       Dostawca: <a class="mr-0" href="{{ url_for('supplier', supplier_id=contract.supplier.id) }}">{{ contract.supplier.supplier_name }}</a><br>
+      Kwota: <a class="mr-0" >{{ contract.value }} złotych</a>
       
     </div>
     <h2><a class="article-title" href="{{ url_for('contract', contract_id=contract.id) }}">{{ contract.title }}</a></h2>

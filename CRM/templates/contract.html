@@ -1,40 +1,47 @@
 {% extends "base.html" %}
 {% block content %}
 <article class="media content-section">
-    <div class="media-body">
-      <div class="article-metadata">
-        
-        Klient: <a class="mr-0" href="{{ url_for('customer', customer_id=contract.customer.id) }}">{{ contract.customer.customer_name }}</a><br>
-        Dostawca: <a class="mr-0" href="{{ url_for('supplier', supplier_id=contract.supplier.id) }}">{{ contract.supplier.supplier_name }}</a><br>
-        
-      </div>
-      <h2><a class="article-title">{{ contract.title }}</a></h2>
-      <p class="article-content"></p>
-    </div>
-  </article>
-  {% for product in products %}
-{{ product.contract.name }}
-  {% endfor %}
+  <div class="media-body">
+    <div class="article-metadata">
 
-  <!-- Modal -->
-  <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="deleteModalLabel">Usunąć spotkanie?</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Zamknij</button>
-          <form action="#" method="POST">
-            <input class="btn btn-danger" type="submit" value="Usuń">
-          </form>
-        </div>
+      Klient: <a class="mr-0"
+        href="{{ url_for('customer', customer_id=contract.customer.id) }}">{{ contract.customer.customer_name }}</a><br>
+      Dostawca: <a class="mr-0"
+        href="{{ url_for('supplier', supplier_id=contract.supplier.id) }}">{{ contract.supplier.supplier_name }}</a><br>
+      Kwota: <a class="mr-0">{{ contract.value }} złotych</a>
+    </div>
+    <h2><a class="article-title">{{ contract.title }}</a></h2>
+    <p class="article-content">
+      Produkty: 
+      {% for product in products %}
+      <li>{{ product.contract.name }}</li>
+      {% endfor %}
+    </p>
+  </div>
+
+</article>
+
+
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Usunąć spotkanie?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Zamknij</button>
+        <form action="#" method="POST">
+          <input class="btn btn-danger" type="submit" value="Usuń">
+        </form>
       </div>
     </div>
   </div>
+</div>
 
 {% endblock content %}
 {% block sidebar %}

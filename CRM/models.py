@@ -30,6 +30,7 @@ class Meeting(db.Model):
     notes = db.Column(db.Text, default = "Brak notatek!")
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     customer_id = db.Column(db.Integer,db.ForeignKey('customer.id'), nullable=False)
+    typ = db.Column(db.String(100), nullable=False)
     
 
     def __repr__(self):
@@ -53,7 +54,7 @@ class Contract(db.Model):
     customer_id = db.Column(db.Integer,db.ForeignKey('customer.id'), nullable=False)
     supplier_id = db.Column(db.Integer, db.ForeignKey('supplier.id'), nullable=False)
     products = db.relationship('Products', backref='products', lazy=True, cascade="all, delete-orphan")
-    value = db.Column(db.Integer)
+    value = db.Column(db.Float)
 
 
     def __repr__(self):
@@ -93,7 +94,4 @@ class Supplier(db.Model):
         return f"Supplier('{self.id}', '{self.supplier_name}')"
 
 
-    
-    
 
-        

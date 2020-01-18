@@ -8,8 +8,10 @@
     
     <div class="article-metadata">
       
-      <a class="mr-0" href="#">{{ meeting.who.full_name() }}</a> z
-      <a class="mr-0" href="#">{{ meeting.with_who.customer_name }}</a><br>
+      <a class="mr-0">{{ meeting.typ}}</a><br> 
+      Użytkownik: <a class="mr-0" href="#">{{ meeting.who.full_name() }}</a><br> 
+      Klient: <a class="mr-0" href="#">{{ meeting.with_who.customer_name }}</a><br>
+      
       <small class="text-muted">{{ meeting.date.strftime('%Y-%m-%d %H:%M') }}</small>
     </div>
     <h2><a class="article-title" href="{{ url_for('meeting', meeting_id=meeting.id) }}">{{ meeting.title }}</a></h2>

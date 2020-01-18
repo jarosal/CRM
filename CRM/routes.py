@@ -1,5 +1,8 @@
 import os
+import shutil
 import secrets
+import pandas as pd
+import sqlite3
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request
 from CRM import app, db, bcrypt
@@ -15,12 +18,26 @@ def upcoming_meetings():
     return upcoming_meetings
 
 
+    
 
 @app.route("/")
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    return render_template('dashboard.html', meetings=upcoming_meetings())
+    conn = sqlite3.connect("CRM\crm.db")
+    df = pd.read_sql_query("select name,price from product;",conn)
+    number_of_contracts = pd.read_sql_query("SELECT COUNT(id) from contract;",conn)
+    value_of_contracts = pd.read_sql_query("SELECT SUM(value) from contract;",conn)
+    users = pd.read_sql_query("select user.name,user.last_name,meeting.date from User inner join Meeting ON meeting.user_id=user.id",conn)
+    users['who'] = users[['name', 'last_name']].apply(lambda x: ' '.join(x), axis=1)
+    xd = users.to_html()
+
+    # df.set_index('id', inplace=True)
+    plot = df.plot.pie(y='price',autopct='%.2f',figsize=(5, 5))
+    shutil.rmtree('CRM\static\plots')
+    os.makedirs('CRM\static\plots')
+    plot.figure.savefig('CRM\static\plots\my_plot2.png')
+    return render_template('dashboard.html', meetings=upcoming_meetings(),number_of_contracts=number_of_contracts,value_of_contracts=value_of_contracts,users=users, xd=xd)
 
 @app.route("/users", methods=['GET', 'POST'])
 def users():
@@ -217,7 +234,7 @@ def contracts():
     form = AddContractForm()
     contracts = Contract.query.filter(Contract.user_id == current_user.id).all()
     if form.validate_on_submit():
-        contract = Contract(user = current_user, customer = form.customer.data, supplier = form.supplier.data, title = form.title.data)
+        contract = Contract(user = current_user, customer = form.customer.data, supplier = form.supplier.data, title = form.title.data, value = form.value.data)
         for product in form.products.data:
             prod = Products(products = contract, contract = product)
             db.session.add(prod)
@@ -235,16 +252,7 @@ def contract(contract_id):
     return render_template('contract.html', contract=contract, meetings=upcoming_meetings(), products=products)
 
 
-# @app.route("/meetings/<int:meeting_id>/delete", methods=['POST'])
-# # @login_required
-# def delete_meeting(meeting_id):
-#     meeting = Meeting.query.get_or_404(meeting_id)
-#     if meeting.who != current_user:
-#         abort(403)
-#     db.session.delete(meeting)
-#     db.session.commit()
-#     flash('Spotkanie usunięte!', 'success')
-#     return redirect(url_for('meetings'))
+
 
 
 
@@ -254,10 +262,10 @@ def meetings():
     form = MeetingForm()
     meetings = Meeting.query.filter(Meeting.user_id == current_user.id).all()
     if form.validate_on_submit():
-        meeting = Meeting(who = current_user, with_who = Customer.query.filter_by(id=form.with_who.data.id).first(), date = datetime.combine(form.date.data, form.time.data), title = form.title.data)
+        meeting = Meeting(who = current_user, with_who = Customer.query.filter_by(id=form.with_who.data.id).first(), date = datetime.combine(form.date.data, form.time.data), title = form.title.data, typ = form.typ.data)
         db.session.add(meeting)
         db.session.commit()
-        flash('Spotkanie zostało dodane!', 'success')
+        flash('Zdarzenie zostało dodane!', 'success')
         return redirect(url_for('meetings'))
     return render_template('meetings.html', meetings=meetings, form=form)
 
@@ -284,7 +292,7 @@ def delete_meeting(meeting_id):
         abort(403)
     db.session.delete(meeting)
     db.session.commit()
-    flash('Spotkanie usunięte!', 'success')
+    flash('Zdarzenie usunięte!', 'success')
     return redirect(url_for('meetings'))
 
 

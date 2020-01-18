@@ -1,6 +1,34 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>placeholder</h1>
+
+<article class="media content-section">
+    <div class="media-body">   
+      <h2>Ilość kontraktów: <a class="article-title" href="{{ url_for('contracts') }}">{{number_of_contracts.iloc[0][0]}}</a></h2>
+    </div>
+  </article>
+
+  <article class="media content-section">
+    <div class="media-body">   
+      <h2>Wartość kontraktów: <a class="article-title" href="{{ url_for('contracts') }}">{{value_of_contracts.iloc[0][0]}} zł</a></h2>
+    </div>
+  </article>
+
+ 
+{% for meeting in meetings %}
+
+  <article class="media content-section">
+    <div class="media-body">   
+      <h2>te: <a class="article-title" href="{{ url_for('contracts') }}">{{users.iloc[]['date']}}</a></h2>
+    </div>
+  </article>
+
+
+{% endfor %}
+
+{{xd|safe}}
+
+
+<!-- <img src='static/plots/my_plot2.png'/> -->
 {% endblock content %}
 {% block sidebar %}
 {% include "partials/upcoming_meetings_sidebar.html" %}

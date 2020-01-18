@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, TextAreaField, IntegerField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, TextAreaField, IntegerField, DecimalField, SelectField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, InputRequired, ValidationError
 from wtforms.widgets import ListWidget, CheckboxInput
 from CRM.models import User, Customer, Meeting, Product, Contract, Supplier
@@ -95,12 +95,15 @@ class MeetingForm(FlaskForm):
 
     def get_customers():      
         return Customer.query
+    def get_meetings():
+        return Meeting.query 
 
     with_who = QuerySelectField('Klient', validators=[DataRequired()], query_factory=get_customers, get_label='customer_name')   # dodac date
     date = DateField('Data', format='%Y-%m-%d', default=datetime.utcnow)
     time = TimeField('Godzina', format='%H:%M', default=datetime.utcnow)
-    title = StringField('Tytuł spotkania', validators=[InputRequired("Podaj tytuł spotkania")])
+    title = StringField('Tytuł', validators=[InputRequired("Podaj tytuł")])
     submit = SubmitField('Dodaj')
+    typ = SelectField('Typ',choices=[('Spotkanie', 'Spotkanie'), ('E-mail', 'E-mail'), ('Zapytanie ofertowe', 'Zapytanie ofertowe'),('Telefon', 'Telefon')])
 
 class EditMeetingForm(FlaskForm):
 
@@ -141,11 +144,13 @@ class AddContractForm(FlaskForm):
     def get_suppliers():      
         return Supplier.query
 
+
     title = StringField('Tytuł umowy', validators=[InputRequired("Podaj tytuł umowy")])
     customer = QuerySelectField('Klient', validators=[DataRequired()], query_factory=get_customers, get_label='customer_name')
     supplier = QuerySelectField('Dostawca', validators=[DataRequired()], query_factory=get_suppliers, get_label='supplier_name')
     products = QuerySelectMultipleField('Produkty', validators=[DataRequired()], query_factory=get_products, get_label='name', option_widget=CheckboxInput(),
         widget=ListWidget(prefix_label=True))
+    value = DecimalField('Kwota', validators=[DataRequired()])
     submit = SubmitField('Dodaj')
 
 
